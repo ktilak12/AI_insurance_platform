@@ -1,0 +1,30 @@
+[
+  {
+    "id": "eval_001",
+    "question": "What is the waiting period for pre-existing diseases?",
+    "expected_answer_keywords": ["36 months", "3 years", "pre-existing"],
+    "expected_page": 18,
+    "category": "waiting_period"
+  },
+  {
+    "id": "eval_002",
+    "question": "Is room rent capped to 1% of Sum Insured?",
+    "expected_answer_keywords": ["no capping", "single private room"],
+    "expected_page": 12,
+    "category": "room_rent"
+  },
+  {
+    "id": "eval_003",
+    "question": "Does this plan cover cosmetic surgery?",
+    "expected_answer_keywords": ["exclusion", "not covered", "cosmetic surgery"],
+    "expected_page": 25,
+    "category": "exclusions"
+  },
+  {
+    "id": "eval_004",
+    "question": "What is the mandatory co-payment percentage?",
+    "expected_answer_keywords": ["0%", "no co-pay", "nil"],
+    "expected_page": 14,
+    "category": "copayment"
+  }
+]
