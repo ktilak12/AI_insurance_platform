@@ -1,0 +1,101 @@
+[
+  {
+    "provider": "HDFC ERGO",
+    "plan_name": "Optima Secure",
+    "category": "health",
+    "premium": 14500,
+    "sum_insured": 1000000,
+    "policy_term_years": 1,
+    "room_rent": {
+      "type": "no_capping",
+      "limit_amount": null,
+      "limit_percentage": null
+    },
+    "icu_limit": {
+      "type": "no_capping",
+      "limit_amount": null
+    },
+    "waiting_period_months": {
+      "initial": 30,
+      "specific_disease": 24,
+      "pre_existing": 36
+    },
+    "copayment_percentage": 0,
+    "deductible_amount": 0,
+    "restoration_benefit": true,
+    "no_claim_bonus_percentage": 50,
+    "maternity_covered": false,
+    "daycare_treatments_covered": true,
+    "pre_hospitalization_days": 60,
+    "post_hospitalization_days": 180,
+    "exclusions": [
+      "Cosmetic surgery",
+      "Self-inflicted injury",
+      "Adventure sports accidents unless endorsed"
+    ],
+    "sub_limits": [],
+    "source_metadata": {
+      "document_name": "hdfc_ergo_optima_secure_policy_wording.pdf",
+      "document_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "extracted_at": "2026-09-23T12:00:00Z",
+      "confidence_score": 0.98,
+      "page_provenance": {
+        "room_rent": 12,
+        "waiting_period": 18,
+        "exclusions": 25
+      }
+    }
+  },
+  {
+    "provider": "Care Health Insurance",
+    "plan_name": "Care Supreme",
+    "category": "health",
+    "premium": 17200,
+    "sum_insured": 1500000,
+    "policy_term_years": 1,
+    "room_rent": {
+      "type": "single_private_room",
+      "limit_amount": null,
+      "limit_percentage": null
+    },
+    "icu_limit": {
+      "type": "no_capping",
+      "limit_amount": null
+    },
+    "waiting_period_months": {
+      "initial": 30,
+      "specific_disease": 24,
+      "pre_existing": 24
+    },
+    "copayment_percentage": 0,
+    "deductible_amount": 0,
+    "restoration_benefit": true,
+    "no_claim_bonus_percentage": 50,
+    "maternity_covered": false,
+    "daycare_treatments_covered": true,
+    "pre_hospitalization_days": 60,
+    "post_hospitalization_days": 180,
+    "exclusions": [
+      "Unproven treatments",
+      "Weight loss treatments",
+      "Dental treatments unless caused by accident"
+    ],
+    "sub_limits": [
+      {
+        "treatment_name": "Cataract surgery",
+        "limit_amount": 40000
+      }
+    ],
+    "source_metadata": {
+      "document_name": "care_supreme_policy_wording.pdf",
+      "document_hash": "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
+      "extracted_at": "2026-09-23T12:30:00Z",
+      "confidence_score": 0.95,
+      "page_provenance": {
+        "room_rent": 8,
+        "waiting_period": 14,
+        "sub_limits": 22
+      }
+    }
+  }
+]

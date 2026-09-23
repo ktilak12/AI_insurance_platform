@@ -1,0 +1,165 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InsurancePolicy",
+  "type": "object",
+  "required": [
+    "provider",
+    "plan_name",
+    "category",
+    "premium",
+    "sum_insured",
+    "policy_term_years",
+    "room_rent",
+    "waiting_period",
+    "copayment_percentage",
+    "restoration_benefit",
+    "source_metadata"
+  ],
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "The legal name of the insurance provider/underwriter"
+    },
+    "plan_name": {
+      "type": "string",
+      "description": "The exact commercial marketing name of the policy plan"
+    },
+    "category": {
+      "type": "string",
+      "enum": ["health", "motor", "travel", "home", "life"],
+      "default": "health"
+    },
+    "premium": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Annual premium in INR"
+    },
+    "sum_insured": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Total coverage / sum insured amount in INR"
+    },
+    "policy_term_years": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+    "room_rent": {
+      "type": "object",
+      "required": ["type", "limit_amount", "limit_percentage"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["no_capping", "percentage_of_sum_insured", "fixed_amount", "single_private_room"]
+        },
+        "limit_amount": {
+          "type": ["number", "null"],
+          "description": "Daily room rent limit in INR if fixed_amount"
+        },
+        "limit_percentage": {
+          "type": ["number", "null"],
+          "description": "Daily room rent limit percentage of Sum Insured"
+        }
+      }
+    },
+    "icu_limit": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["no_capping", "percentage_of_sum_insured", "fixed_amount"]
+        },
+        "limit_amount": {
+          "type": ["number", "null"]
+        }
+      }
+    },
+    "waiting_period_months": {
+      "type": "object",
+      "required": ["initial", "specific_disease", "pre_existing"],
+      "properties": {
+        "initial": {
+          "type": "integer",
+          "description": "Initial waiting period in days (typically 30)"
+        },
+        "specific_disease": {
+          "type": "integer",
+          "description": "Waiting period for named listed diseases in months"
+        },
+        "pre_existing": {
+          "type": "integer",
+          "description": "Waiting period for pre-existing diseases in months"
+        }
+      }
+    },
+    "copayment_percentage": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Mandatory co-payment percentage (0 for no co-pay)"
+    },
+    "deductible_amount": {
+      "type": "number",
+      "minimum": 0,
+      "default": 0
+    },
+    "restoration_benefit": {
+      "type": "boolean",
+      "description": "Whether sum insured is automatically restored upon exhaustion"
+    },
+    "no_claim_bonus_percentage": {
+      "type": "number",
+      "minimum": 0,
+      "description": "Cumulative bonus percentage per claim-free year"
+    },
+    "maternity_covered": {
+      "type": "boolean",
+      "default": false
+    },
+    "daycare_treatments_covered": {
+      "type": "boolean",
+      "default": true
+    },
+    "pre_hospitalization_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 60
+    },
+    "post_hospitalization_days": {
+      "type": "integer",
+      "minimum": 0,
+      "default": 180
+    },
+    "exclusions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "sub_limits": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["treatment_name", "limit_amount"],
+        "properties": {
+          "treatment_name": { "type": "string" },
+          "limit_amount": { "type": "number" }
+        }
+      }
+    },
+    "source_metadata": {
+      "type": "object",
+      "required": ["document_name", "document_hash", "extracted_at", "confidence_score"],
+      "properties": {
+        "document_name": { "type": "string" },
+        "document_hash": { "type": "string" },
+        "extracted_at": { "type": "string", "format": "date-time" },
+        "confidence_score": { "type": "number", "minimum": 0, "maximum": 1.0 },
+        "page_provenance": {
+          "type": "object",
+          "additionalProperties": { "type": "integer" }
+        }
+      }
+    }
+  }
+}
