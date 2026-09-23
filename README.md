@@ -1,0 +1,1 @@
+# AI_insurance_platform
