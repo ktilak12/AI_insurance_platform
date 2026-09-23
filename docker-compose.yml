@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  database:
+    image: pgvector/pgvector:pg16
+    container_name: insurance_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+      POSTGRES_DB: insurance_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
+    restart: unless-stopped
+
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: insurance_ai_service
+    environment:
+      - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: insurance_backend
+    environment:
+      - PORT=5000
+      - AI_SERVICE_URL=http://ai-service:8000
+      - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
+      - DATABASE_URL=postgresql://postgres:postgrespassword@database:5432/insurance_db
+    ports:
+      - "5000:5000"
+    depends_on:
+      - database
+      - ai-service
+    restart: unless-stopped
+
+volumes:
+  pgdata:
