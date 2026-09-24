@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict, Any, Literal
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 from app.schemas.policy import InsurancePolicySchema
 
 class BatchExtractionRequest(BaseModel):
@@ -27,7 +27,7 @@ class BatchJobStatusResponse(BaseModel):
     total_documents: int
     completed_count: int
     failed_count: int
-    created_at: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     completed_at: Optional[datetime] = None
     results: List[DocumentExtractionItemResult] = Field(default_factory=list)
 

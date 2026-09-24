@@ -1,7 +1,7 @@
 import uuid
 import time
 from typing import Dict, List, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from app.schemas.b2b import BatchExtractionRequest, BatchJobStatusResponse, DocumentExtractionItemResult
 from app.schemas.policy import InsurancePolicySchema, RoomRentLimit, WaitingPeriods, SourceMetadata
 
@@ -58,6 +58,7 @@ class B2BExtractionManager:
                 processing_time_ms=840
             ))
 
+        now = datetime.now(timezone.utc)
         job = BatchJobStatusResponse(
             job_id=job_id,
             client_id=request.client_id,
@@ -65,8 +66,8 @@ class B2BExtractionManager:
             total_documents=len(request.document_urls),
             completed_count=len(request.document_urls),
             failed_count=0,
-            created_at=datetime.utcnow(),
-            completed_at=datetime.utcnow(),
+            created_at=now,
+            completed_at=now,
             results=results
         )
 

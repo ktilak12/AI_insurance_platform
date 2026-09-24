@@ -1,6 +1,6 @@
 from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
-from datetime import datetime
+from datetime import datetime, timezone
 
 class RoomRentLimit(BaseModel):
     type: str = Field(..., description="no_capping, percentage_of_sum_insured, fixed_amount, single_private_room")
@@ -23,7 +23,7 @@ class SubLimit(BaseModel):
 class SourceMetadata(BaseModel):
     document_name: str
     document_hash: str
-    extracted_at: datetime = Field(default_factory=datetime.utcnow)
+    extracted_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     confidence_score: float = Field(..., ge=0.0, le=1.0)
     page_provenance: Dict[str, int] = Field(default_factory=dict, description="Field to page number mapping")
 
