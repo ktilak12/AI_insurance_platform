@@ -1,0 +1,184 @@
+[
+  {
+    "id": "hdfc-optima-diff-set",
+    "plan_name": "HDFC ERGO Optima Secure",
+    "provider": "HDFC ERGO",
+    "old_version": {
+      "id": "hdfc-optima-2024",
+      "provider": "HDFC ERGO",
+      "plan_name": "Optima Secure (2024 Wording)",
+      "version": "2024 Wording",
+      "category": "health",
+      "premium": 13800,
+      "sum_insured": 1000000,
+      "policy_term_years": 1,
+      "room_rent": {
+        "type": "single_private_room",
+        "limit_amount": null,
+        "limit_percentage": null
+      },
+      "waiting_period_months": {
+        "initial": 30,
+        "specific_disease": 24,
+        "pre_existing": 36
+      },
+      "copayment_percentage": 0,
+      "deductible_amount": 0,
+      "restoration_benefit": true,
+      "no_claim_bonus_percentage": 50,
+      "maternity_covered": false,
+      "daycare_treatments_covered": true,
+      "pre_hospitalization_days": 60,
+      "post_hospitalization_days": 180,
+      "exclusions": [
+        "Cosmetic surgery",
+        "Self-inflicted injury",
+        "Adventure sports accidents",
+        "Robotic surgeries sub-limit applied"
+      ],
+      "sub_limits": [
+        { "treatment_name": "Robotic surgery", "limit_amount": 100000 }
+      ],
+      "source_metadata": {
+        "document_name": "hdfc_optima_secure_2024.pdf",
+        "document_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "extracted_at": "2024-04-01T10:00:00Z",
+        "confidence_score": 0.98,
+        "page_provenance": { "premium": 2, "room_rent": 12, "waiting_period": 18, "exclusions": 25 }
+      }
+    },
+    "new_version": {
+      "id": "hdfc-optima-2026",
+      "provider": "HDFC ERGO",
+      "plan_name": "Optima Secure (2026 Updated Wording)",
+      "version": "2026 Updated Wording",
+      "category": "health",
+      "premium": 14900,
+      "sum_insured": 1000000,
+      "policy_term_years": 1,
+      "room_rent": {
+        "type": "no_capping",
+        "limit_amount": null,
+        "limit_percentage": null
+      },
+      "waiting_period_months": {
+        "initial": 30,
+        "specific_disease": 24,
+        "pre_existing": 24
+      },
+      "copayment_percentage": 0,
+      "deductible_amount": 0,
+      "restoration_benefit": true,
+      "no_claim_bonus_percentage": 100,
+      "maternity_covered": false,
+      "daycare_treatments_covered": true,
+      "pre_hospitalization_days": 60,
+      "post_hospitalization_days": 180,
+      "exclusions": [
+        "Cosmetic surgery",
+        "Self-inflicted injury",
+        "Adventure sports accidents"
+      ],
+      "sub_limits": [],
+      "source_metadata": {
+        "document_name": "hdfc_optima_secure_2026_revised.pdf",
+        "document_hash": "9c8a7b6c5d4e3f2a1b0c9d8e7f6a5b4c3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a",
+        "extracted_at": "2026-06-15T14:30:00Z",
+        "confidence_score": 0.99,
+        "page_provenance": { "premium": 2, "room_rent": 10, "waiting_period": 16, "exclusions": 22 }
+      }
+    }
+  },
+  {
+    "id": "care-supreme-diff-set",
+    "plan_name": "Care Supreme Health Shield",
+    "provider": "Care Health Insurance",
+    "old_version": {
+      "id": "care-supreme-2024",
+      "provider": "Care Health Insurance",
+      "plan_name": "Care Supreme (2024 Wording)",
+      "version": "2024 Wording",
+      "category": "health",
+      "premium": 16200,
+      "sum_insured": 1500000,
+      "policy_term_years": 1,
+      "room_rent": {
+        "type": "fixed_amount",
+        "limit_amount": 7500,
+        "limit_percentage": null
+      },
+      "waiting_period_months": {
+        "initial": 30,
+        "specific_disease": 24,
+        "pre_existing": 36
+      },
+      "copayment_percentage": 10,
+      "deductible_amount": 0,
+      "restoration_benefit": false,
+      "no_claim_bonus_percentage": 50,
+      "maternity_covered": false,
+      "daycare_treatments_covered": true,
+      "pre_hospitalization_days": 30,
+      "post_hospitalization_days": 90,
+      "exclusions": [
+        "Unproven treatments",
+        "Weight loss treatments",
+        "Dental treatments unless caused by accident",
+        "Mental healthcare treatments"
+      ],
+      "sub_limits": [
+        { "treatment_name": "Cataract surgery", "limit_amount": 40000 }
+      ],
+      "source_metadata": {
+        "document_name": "care_supreme_2024.pdf",
+        "document_hash": "8f434346648f6b96df89dda901c5176b10a6d83961dd3c1ac88b59b2dc327aa4",
+        "extracted_at": "2024-03-20T11:00:00Z",
+        "confidence_score": 0.94,
+        "page_provenance": { "premium": 1, "room_rent": 7, "waiting_period": 14 }
+      }
+    },
+    "new_version": {
+      "id": "care-supreme-2026",
+      "provider": "Care Health Insurance",
+      "plan_name": "Care Supreme (2026 Updated Wording)",
+      "version": "2026 Updated Wording",
+      "category": "health",
+      "premium": 17800,
+      "sum_insured": 1500000,
+      "policy_term_years": 1,
+      "room_rent": {
+        "type": "single_private_room",
+        "limit_amount": null,
+        "limit_percentage": null
+      },
+      "waiting_period_months": {
+        "initial": 30,
+        "specific_disease": 24,
+        "pre_existing": 24
+      },
+      "copayment_percentage": 0,
+      "deductible_amount": 0,
+      "restoration_benefit": true,
+      "no_claim_bonus_percentage": 50,
+      "maternity_covered": false,
+      "daycare_treatments_covered": true,
+      "pre_hospitalization_days": 60,
+      "post_hospitalization_days": 180,
+      "exclusions": [
+        "Unproven treatments",
+        "Weight loss treatments",
+        "Dental treatments unless caused by accident"
+      ],
+      "sub_limits": [
+        { "treatment_name": "Cataract surgery", "limit_amount": 60000 }
+      ],
+      "source_metadata": {
+        "document_name": "care_supreme_2026_wording.pdf",
+        "document_hash": "1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b",
+        "extracted_at": "2026-07-01T09:15:00Z",
+        "confidence_score": 0.97,
+        "page_provenance": { "premium": 1, "room_rent": 6, "waiting_period": 12 }
+      }
+    }
+  }
+]

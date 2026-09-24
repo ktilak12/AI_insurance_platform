@@ -29,6 +29,7 @@ export interface InsurancePolicy {
   id?: string;
   provider: string;
   plan_name: string;
+  version?: string;
   category: 'health' | 'motor' | 'travel' | 'home' | 'life';
   premium: number;
   sum_insured: number;
@@ -80,3 +81,61 @@ export interface FitAnalysisResult {
   };
   explanation_points: string[];
 }
+
+// --- Phase 3: Diff Engine & B2B Types ---
+
+export type DiffImpact = 'FAVORABLE' | 'RESTRICTIVE' | 'NEUTRAL';
+
+export interface ClauseDiff {
+  clause_category: string;
+  field_name: string;
+  old_value: string;
+  new_value: string;
+  impact: DiffImpact;
+  explanation: string;
+  old_page?: number;
+  new_page?: number;
+}
+
+export interface PolicyDiffSummary {
+  favorable_count: number;
+  restrictive_count: number;
+  neutral_count: number;
+  overall_sentiment: 'IMPROVED' | 'DETERIORATED' | 'UNCHANGED' | 'MIXED';
+  executive_summary: string;
+  claims_impact_score: number;
+}
+
+export interface PolicyVersionDiffResponse {
+  base_plan_name: string;
+  base_version: string;
+  target_version: string;
+  summary: PolicyDiffSummary;
+  clause_diffs: ClauseDiff[];
+}
+
+export interface DocumentExtractionItemResult {
+  document_url: string;
+  document_name: string;
+  status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+  policy?: InsurancePolicy;
+  confidence_score: number;
+  requires_human_review: boolean;
+  review_reasons: string[];
+  processing_time_ms: number;
+  error_message?: string;
+}
+
+export interface BatchJobStatusResponse {
+  job_id: string;
+  client_id: string;
+  status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'PARTIALLY_FAILED' | 'FAILED';
+  total_documents: intTotalDocuments;
+  completed_count: number;
+  failed_count: number;
+  created_at: string;
+  completed_at?: string;
+  results: DocumentExtractionItemResult[];
+}
+
+type intTotalDocuments = number;
