@@ -5,40 +5,55 @@
 The system follows a decoupled, secure multi-tier architecture separating user-facing web services, business logic/auth orchestration, and isolated AI document processing workloads.
 
 ```
-┌────────────────┐          HTTPS / TLS 1.3         ┌───────────────────────┐
-│ React Frontend │ ◄──────────────────────────────► │  Node.js Backend API  │
-│ (Vite + TS)    │                                  │ (Express / Gateway)   │
-└────────────────┘                                  └──────────┬────────────┘
-                                                               │
-                                         Internal REST + Secret Auth Key (mTLS/HMAC)
-                                                               │
-                                                               ▼
-┌────────────────┐      SQL / pgvector Queries      ┌───────────────────────┐
-│   PostgreSQL   │ ◄──────────────────────────────► │   FastAPI AI Engine   │
-│   (pgvector)   │                                  │   (Python 3.11+)      │
-└────────────────┘                                  └───────────────────────┘
+┌────────────────┐          HTTPS / TLS 1.3         ┌────────────────────────────────┐
+│ React Frontend │ ◄──────────────────────────────► │  Node.js Backend & API Gateway │
+│ (Vite + TS)    │                                  │  (Express 4.x / TS / Zod)      │
+└────────────────┘                                  └───────────────┬────────────────┘
+                                                                    │
+                                              Internal REST + Secret Auth Key (mTLS/HMAC)
+                                              Header: X-Internal-API-Key
+                                                                    │
+                                                                    ▼
+┌────────────────┐      SQL / pgvector Queries      ┌────────────────────────────────┐
+│   PostgreSQL   │ ◄──────────────────────────────► │   FastAPI AI & RAG Engine      │
+│   (pgvector)   │                                  │   (PyMuPDF / Gemini / Pydantic)│
+└────────────────┘                                  └────────────────────────────────┘
 ```
 
 ---
 
-## 2. Communication Protocols & Service Boundaries
+## 2. Phase 4: Core Backend Services (`/backend`)
 
-### Node.js API Gateway (`/backend`)
-- **Primary Responsibilities**:
-  - User Authentication (JWT with secure HTTP-only cookies, Argon2 password hashing).
-  - Rate Limiting & Abuse Prevention (`express-rate-limit`, `helmet` HTTP security headers).
-  - Regulatory Compliance Guardrails (stripping promotional flags, ensuring unbiased comparison data).
-  - User profile and questionnaire session management.
-  - Proxying authenticated AI/comparison requests to the internal AI service.
+### 4.1 Authentication Service (`AuthService` & `/api/auth`)
+- **JWT Architecture**:
+  - **Short-lived Access Token (15 min)**: Signs `{ id, email, role }` with `JWT_SECRET`.
+  - **Long-lived Refresh Token (7 days)**: Signed with separate `JWT_REFRESH_SECRET`.
+  - **Token Rotation**: Refresh tokens are revoked and replaced with single-use rotation, preventing replay attacks.
+- **Password Security**: Salted hashing via `bcryptjs` (cost factor 10).
+- **OAuth 2.0 Integration**: Federated login endpoint (`POST /api/auth/oauth`) for Google / GitHub auth providers.
 
-### FastAPI AI Engine (`/ai-service`)
-- **Primary Responsibilities**:
-  - Secure Document Processing (PyMuPDF parser, OCR fallback).
-  - Untrusted PDF Sandboxing & Prompt Injection Defense.
-  - LLM Structured Output extraction adhering strictly to the canonical Insurance Policy JSON Schema via Pydantic.
-  - Vector embeddings generation & `pgvector` similarity search for RAG.
-  - Confidence calculation (scores `< 0.70` flagged for mandatory human/data verification).
-  - Policy Q&A grounded generation with mandatory source citation (Page number, Section name, Document hash).
+### 4.2 User Requirements API (`UserRequirementsService` & `/api/user/requirements`)
+- **Secure Health Profiling**:
+  - Collects age, city, budget, target sum insured, acceptable waiting periods, and declared health conditions.
+  - Strict input validation via **Zod schemas** (`requirementProfileSchema`).
+  - Privacy Compliance: Endpoints support data deletion (`DELETE /api/user/requirements`) for the "Right to be forgotten".
+
+### 4.3 Plan Comparison Engine (`ComparisonEngine` & `/api/compare`)
+- **IRDAI Unbiased Scoring Algorithm**:
+  - **Budget Fit (25%)**: Proportional scaling penalty if premium exceeds budget.
+  - **Coverage Fit (25%)**: Deficit penalty if sum insured is under user target.
+  - **Waiting Period Fit (20%)**: Compares pre-existing disease (PED) and specific ailment clauses.
+  - **Room Rent Proportionate Deduction Risk (15%)**: Assesses whether capped room rent triggers proportionate deduction penalties across doctor and surgeon invoices.
+  - **Co-Payment Fit (10%)**: Evaluates zero co-pay requirement vs mandatory insurer cost sharing.
+  - **Auto-Restoration & Maternity (5%)**: Checks inclusion of 100% recharge benefits.
+  - **Zero Sponsor Manipulation**: Sorting strictly follows mathematical fit percentage.
+
+### 4.4 Secure AI Gateway (`AIGatewayService`)
+- **Internal Authentication**: Requires `X-Internal-API-Key` matching `INTERNAL_API_SECRET` to prevent unauthorized AI invocation.
+- **Resilience & Circuit Breaker**:
+  - Dynamic health checking (`GET /api/health` queries `/health` on FastAPI).
+  - Graceful degradation fallback if the AI engine is warming up or temporarily unreachable.
+  - Request timeout enforcement (10,000ms).
 
 ---
 
