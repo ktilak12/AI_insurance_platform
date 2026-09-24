@@ -549,7 +549,7 @@ console.log('Batch Job Queued:', response.data);`;
                 PolicyLens AI
               </span>
               <span className="hidden sm:inline-block ml-2.5 px-2 py-0.5 text-[10px] font-semibold tracking-wider text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 rounded-full">
-                PHASE 3 ACTIVE • B2B & DIFF ENGINE
+                ENTERPRISE READY • IRDAI COMPLIANT
               </span>
             </div>
           </div>
@@ -577,7 +577,7 @@ console.log('Batch Job Queued:', response.data);`;
             >
               <FileDiff className="w-3.5 h-3.5 text-cyan-400" />
               <span>Policy Diff Engine</span>
-              <span className="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 text-[9px] font-bold">NEW</span>
+              <span className="px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 text-[10px] font-bold">NEW</span>
             </button>
             <button
               onClick={() => setActiveTab('b2b')}
@@ -589,7 +589,7 @@ console.log('Batch Job Queued:', response.data);`;
             >
               <Code2 className="w-3.5 h-3.5 text-amber-400" />
               <span>B2B API Portal</span>
-              <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 text-[9px] font-bold">API</span>
+              <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold">API</span>
             </button>
             <button
               onClick={() => setActiveTab('chat')}

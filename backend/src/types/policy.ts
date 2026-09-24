@@ -114,6 +114,14 @@ export interface PolicyVersionDiffResponse {
   clause_diffs: ClauseDiff[];
 }
 
+export interface PolicyVersionSet {
+  id: string;
+  plan_name: string;
+  provider: string;
+  old_version: InsurancePolicy;
+  new_version: InsurancePolicy;
+}
+
 export interface DocumentExtractionItemResult {
   document_url: string;
   document_name: string;
@@ -130,12 +138,10 @@ export interface BatchJobStatusResponse {
   job_id: string;
   client_id: string;
   status: 'QUEUED' | 'PROCESSING' | 'COMPLETED' | 'PARTIALLY_FAILED' | 'FAILED';
-  total_documents: intTotalDocuments;
+  total_documents: number;
   completed_count: number;
   failed_count: number;
   created_at: string;
   completed_at?: string;
   results: DocumentExtractionItemResult[];
 }
-
-type intTotalDocuments = number;

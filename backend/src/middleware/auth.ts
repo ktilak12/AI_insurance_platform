@@ -28,7 +28,10 @@ export const authenticateJWT = (
     const decoded = jwt.verify(token, JWT_SECRET) as { id: string; email: string; role: string };
     req.user = decoded;
     next();
-  } catch (err) {
-    return res.status(403).json({ error: 'Invalid or expired token.' });
+  } catch (err: any) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Access token expired.', code: 'TOKEN_EXPIRED' });
+    }
+    return res.status(403).json({ error: 'Invalid or malformed token.' });
   }
 };

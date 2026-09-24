@@ -23,6 +23,7 @@ services:
     environment:
       - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
       - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - DATABASE_URL=postgresql://postgres:postgrespassword@database:5432/insurance_db
     ports:
       - "8000:8000"
     depends_on:
@@ -39,6 +40,8 @@ services:
       - AI_SERVICE_URL=http://ai-service:8000
       - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
       - DATABASE_URL=postgresql://postgres:postgrespassword@database:5432/insurance_db
+      - JWT_SECRET=change_me_to_a_random_jwt_secret_key
+      - JWT_REFRESH_SECRET=change_me_to_a_random_jwt_refresh_secret_key
     ports:
       - "5000:5000"
     depends_on:
