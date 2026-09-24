@@ -109,7 +109,11 @@ export class AuthService {
 
       const payload = { id: decoded.id, email: decoded.email, role: decoded.role };
       const newAccessToken = jwt.sign(payload, JWT_SECRET, { expiresIn: '15m' });
-      const newRefreshToken = jwt.sign(payload, JWT_REFRESH_SECRET, { expiresIn: '7d' });
+      const newRefreshToken = jwt.sign(
+        { ...payload, jti: `${Date.now()}_${Math.random().toString(36).substring(2, 9)}` },
+        JWT_REFRESH_SECRET,
+        { expiresIn: '7d' }
+      );
 
       this.refreshTokens.add(newRefreshToken);
 
