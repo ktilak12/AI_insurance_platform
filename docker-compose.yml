@@ -3,51 +3,101 @@ version: '3.8'
 services:
   database:
     image: pgvector/pgvector:pg16
-    container_name: insurance_db
+    container_name: policylens_db
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgrespassword
-      POSTGRES_DB: insurance_db
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgrespassword}
+      POSTGRES_DB: ${POSTGRES_DB:-insurance_db}
     ports:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./database/migrations/001_initial_schema.sql:/docker-entrypoint-initdb.d/001_initial_schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d insurance_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: policylens_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
     restart: unless-stopped
 
   ai-service:
     build:
       context: ./ai-service
       dockerfile: Dockerfile
-    container_name: insurance_ai_service
+    container_name: policylens_ai_service
     environment:
-      - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:-change_me_to_a_random_secure_64_char_secret_key}
       - GEMINI_API_KEY=${GEMINI_API_KEY}
       - DATABASE_URL=postgresql://postgres:postgrespassword@database:5432/insurance_db
+      - REDIS_URL=redis://redis:6379/0
     ports:
       - "8000:8000"
     depends_on:
-      - database
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: insurance_backend
+    container_name: policylens_backend
     environment:
+      - NODE_ENV=production
       - PORT=5000
       - AI_SERVICE_URL=http://ai-service:8000
-      - INTERNAL_API_SECRET=change_me_to_a_random_secure_64_char_secret_key
+      - INTERNAL_API_SECRET=${INTERNAL_API_SECRET:-change_me_to_a_random_secure_64_char_secret_key}
       - DATABASE_URL=postgresql://postgres:postgrespassword@database:5432/insurance_db
-      - JWT_SECRET=change_me_to_a_random_jwt_secret_key
-      - JWT_REFRESH_SECRET=change_me_to_a_random_jwt_refresh_secret_key
+      - REDIS_URL=redis://redis:6379/0
+      - JWT_SECRET=${JWT_SECRET:-change_me_to_a_random_jwt_secret_key}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET:-change_me_to_a_random_jwt_refresh_secret_key}
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:80,http://localhost:5173}
     ports:
       - "5000:5000"
     depends_on:
-      - database
-      - ai-service
+      database:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:5000/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: policylens_frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
     restart: unless-stopped
 
 volumes:
   pgdata:
+  redisdata:
