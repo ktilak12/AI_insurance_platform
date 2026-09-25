@@ -30,15 +30,24 @@ class PolicyDiffEngine:
         # 2. Room Rent Capping
         old_rr_type = old_policy.room_rent.type
         new_rr_type = new_policy.room_rent.type
+        rr_ranks = {
+            "no_capping": 4,
+            "single_private_room": 3,
+            "shared_room": 2,
+            "1_percent_capping": 1,
+            "2_percent_capping": 1
+        }
+        old_rank = rr_ranks.get(old_rr_type, 2)
+        new_rank = rr_ranks.get(new_rr_type, 2)
         if old_rr_type != new_rr_type or old_policy.room_rent.limit_amount != new_policy.room_rent.limit_amount:
-            is_fav = (new_rr_type in ["no_capping", "single_private_room"] and old_rr_type not in ["no_capping", "single_private_room"])
+            is_fav = new_rank > old_rank
             diffs.append(ClauseDiff(
                 clause_category="room_rent",
                 field_name="Room Rent Limit",
                 old_value=old_rr_type.replace('_', ' ').title(),
                 new_value=new_rr_type.replace('_', ' ').title(),
-                impact="FAVORABLE" if is_fav else "RESTRICTIVE",
-                explanation="Room rent restriction upgraded to single private/no capping eliminating proportionate deduction risk." if is_fav else "Room rent restriction tightened which may trigger proportionate deduction penalties on claims.",
+                impact="FAVORABLE" if is_fav else ("RESTRICTIVE" if new_rank < old_rank else "NEUTRAL"),
+                explanation="Room rent restriction upgraded to single private/no capping eliminating proportionate deduction risk." if is_fav else "Room rent restriction modified or tightened.",
                 old_page=old_policy.source_metadata.page_provenance.get("room_rent", 2),
                 new_page=new_policy.source_metadata.page_provenance.get("room_rent", 2)
             ))
