@@ -23,10 +23,11 @@ export interface SourceMetadata {
   extracted_at: string;
   confidence_score: number;
   page_provenance: Record<string, number>;
+  contract_excerpt?: Record<string, string>;
 }
 
 export interface InsurancePolicy {
-  id?: string;
+  id: string;
   provider: string;
   plan_name: string;
   version?: string;
@@ -35,28 +36,43 @@ export interface InsurancePolicy {
   sum_insured: number;
   policy_term_years: number;
   room_rent: RoomRentLimit;
+  icu_limit?: {
+    type: 'no_capping' | 'fixed_amount' | 'percentage_of_sum_insured';
+    limit_amount?: number | null;
+  };
   waiting_period_months: WaitingPeriods;
   copayment_percentage: number;
   deductible_amount: number;
   restoration_benefit: boolean;
+  restoration_type?: string;
   no_claim_bonus_percentage: number;
+  no_claim_bonus_max_multiplier?: number;
   maternity_covered: boolean;
   daycare_treatments_covered: boolean;
   pre_hospitalization_days: number;
   post_hospitalization_days: number;
+  opd_benefit_included?: boolean;
+  global_coverage_included?: boolean;
+  cashless_hospitals_count?: number;
+  claim_settlement_ratio?: number;
   exclusions: string[];
   sub_limits: SubLimit[];
   source_metadata: SourceMetadata;
 }
 
 export interface UserRequirementProfile {
+  persona?: 'individual' | 'couple' | 'family' | 'senior';
   age?: number;
+  eldest_member_age?: number;
   city?: string;
+  city_tier?: 'tier_1' | 'tier_2' | 'tier_3';
   family_members_count?: number;
   budget_max?: number;
   sum_insured_target?: number;
   max_acceptable_waiting_months?: number;
   pre_existing_conditions?: string[];
+  room_rent_preference?: 'no_capping' | 'single_private' | 'any';
+  copay_tolerance?: 0 | 10 | 20;
   preferences?: {
     low_premium?: boolean;
     high_coverage?: boolean;
@@ -64,6 +80,9 @@ export interface UserRequirementProfile {
     no_copay?: boolean;
     maternity?: boolean;
     restoration?: boolean;
+    opd_cover?: boolean;
+    global_cover?: boolean;
+    ncb_booster?: boolean;
   };
 }
 
@@ -76,10 +95,35 @@ export interface FitAnalysisResult {
     budget_fit: boolean | 'warning';
     coverage_fit: boolean | 'warning';
     waiting_period_fit: boolean | 'warning';
+    room_rent_fit: boolean | 'warning';
     copay_fit: boolean | 'warning';
     maternity_fit: boolean | 'warning';
+    restoration_fit: boolean | 'warning';
   };
   explanation_points: string[];
+  positive_matches: string[];
+  caveats_and_warnings: string[];
+}
+
+export interface GroundedCitation {
+  page_number: number;
+  section_name: string;
+  supporting_quote: string;
+  document_name?: string;
+  document_hash?: string;
+  confidence?: number;
+}
+
+export interface ChatMessage {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+  plan_id?: string;
+  plan_name?: string;
+  is_grounded?: boolean;
+  confidence?: number;
+  citation?: GroundedCitation;
 }
 
 // --- Phase 3 Diff Engine & B2B Types ---
