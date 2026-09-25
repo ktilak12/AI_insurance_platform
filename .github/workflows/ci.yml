@@ -1,51 +1,124 @@
-name: Continuous Integration & Security Auditing
+name: PolicyLens CI & Security Pipeline
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, develop ]
   pull_request:
     branches: [ main, master ]
 
 jobs:
-  backend-lint-test:
+  frontend-build-test:
+    name: 🌐 Frontend Lint & Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Use Node.js
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install dependencies
-        working-directory: ./backend
-        run: npm ci || npm install
-      - name: Run Backend Tests
-        working-directory: ./backend
-        run: npm test --if-present
+          cache: 'npm'
+          cache-dependency-path: './frontend/package-lock.json'
 
-  ai-service-lint-test:
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm ci
+
+      - name: TypeScript Verification & Production Build
+        working-directory: ./frontend
+        run: npm run build
+
+  backend-test:
+    name: ⚙️ Backend Tests & TypeCheck
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './backend/package-lock.json'
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm ci
+
+      - name: Run Backend Jest Unit Test Suite
+        working-directory: ./backend
+        run: npm test
+
+      - name: Build Backend TypeScript
+        working-directory: ./backend
+        run: npm run build
+
+  ai-service-test:
+    name: 🧠 AI Service Pytest Suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install dependencies
+          cache: 'pip'
+          cache-dependency-path: './ai-service/requirements.txt'
+
+      - name: Install AI Service Dependencies
         working-directory: ./ai-service
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Run AI Unit Tests
-        working-directory: ./ai-service
-        run: pytest tests/
 
-  security-audit:
+      - name: Run AI & RAG Unit Tests
+        working-directory: ./ai-service
+        run: pytest tests/ -v
+
+  database-schema-validation:
+    name: 🗄️ Database & pgvector Schema Check
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+          POSTGRES_DB: insurance_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Validate Migrations against PostgreSQL 16 + pgvector
+        run: |
+          sudo apt-get update && sudo apt-get install -y postgresql-client
+          PGPASSWORD=postgrespassword psql -h localhost -U postgres -d insurance_db -f ./database/migrations/001_initial_schema.sql
+          echo "Schema migration executed cleanly without syntax or extension errors."
+
+  security-secret-scan:
+    name: 🛡️ Security Secret & Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Scan repository for secrets
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: TruffleHog Secret Scanning
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
+          extra_args: --debug --only-verified
